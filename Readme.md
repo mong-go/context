@@ -1,12 +1,10 @@
 # gomon
 
-[![GoDoc](https://godoc.org/github.com/nowk/gomon?status.svg)](http://godoc.org/github.com/nowk/gomon)
+[![GoDoc](https://godoc.org/github.com/gomon/gomon?status.svg)](http://godoc.org/github.com/gomon/gomon)
 
-mgo utilities
+mgo session clone middleware
 
----
-
-    Handler(*mgo.Session, interface{}) func(http.Handler) http.Handler
+## Example
 
 Handler for alice to clone sessions and set to context using gorilla/context.
 
