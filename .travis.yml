@@ -7,8 +7,8 @@ install:
 services:
   - mongodb
 go:
-  - "1.0"
-  - "1.1"
+  # - "1.0" # mgo not supported
+  # - "1.1"
   - "1.2"
   - "1.3"
   - "tip"
