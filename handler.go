@@ -17,7 +17,7 @@ func Handler(ses *mgo.Session, name string, key ...interface{}) func(http.Handle
 			cl := ses.Clone()
 			defer cl.Close()
 			db := cl.DB(name)
-			context.Set(req, k, &db)
+			context.Set(req, k, db)
 
 			h.ServeHTTP(w, req)
 		})

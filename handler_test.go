@@ -30,6 +30,7 @@ func TestHandlerContextAsDatabaseName(t *testing.T) {
 		Handler(s, "gomon_test")(h).ServeHTTP(w, req)
 		se := context.Get(req, "gomon_test")
 		assert.NotNil(t, se)
+		assert.TypeOf(t, "*mgo.Database", se)
 		assert.Equal(t, "Hello World!", w.Body.String())
 	})
 }
@@ -41,6 +42,7 @@ func TestHandlerSetCustomContextKey(t *testing.T) {
 		Handler(s, "gomon_test", "db")(h).ServeHTTP(w, req)
 		se := context.Get(req, "db")
 		assert.NotNil(t, se)
+		assert.TypeOf(t, "*mgo.Database", se)
 		assert.Equal(t, "Hello World!", w.Body.String())
 	})
 }
