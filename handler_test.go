@@ -1,22 +1,24 @@
-package gomon
+package context
 
 import (
-	"github.com/gorilla/context"
-	"github.com/nowk/assert"
-	"gopkg.in/mgo.v2"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gorilla/context"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/nowk/assert.v2"
 )
 
-func mongod(t *testing.T, req *http.Request, fn func(s *mgo.Session)) {
+func Setup(t *testing.T) (*mgo.Session, func()) {
 	s, err := mgo.Dial("127.0.0.1:27017")
 	if err != nil {
-		t.Fatalf("error: mgo dial: %s\n", err)
+		t.Fatal(err)
 	}
-	defer s.Close()
 
-	fn(s)
+	return s, func() {
+		s.Close()
+	}
 }
 
 var h = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -24,25 +26,29 @@ var h = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 })
 
 func TestHandlerContextAsDatabaseName(t *testing.T) {
-	w, req := httptest.NewRecorder(), &http.Request{}
+	s, teardown := Setup(t)
+	defer teardown()
 
-	mongod(t, req, func(s *mgo.Session) {
-		Handler(s, "gomon_test")(h).ServeHTTP(w, req)
-		se := context.Get(req, "gomon_test")
-		assert.NotNil(t, se)
-		assert.TypeOf(t, "*mgo.Database", se)
-		assert.Equal(t, "Hello World!", w.Body.String())
-	})
+	w := httptest.NewRecorder()
+	req := &http.Request{}
+	Handler(s, "gomon_test")(h).ServeHTTP(w, req)
+
+	c := context.Get(req, "gomon_test")
+	assert.NotNil(t, c)
+	assert.TypeOf(t, "*mgo.Database", c)
+	assert.Equal(t, "Hello World!", w.Body.String())
 }
 
 func TestHandlerSetCustomContextKey(t *testing.T) {
-	w, req := httptest.NewRecorder(), &http.Request{}
+	s, teardown := Setup(t)
+	defer teardown()
 
-	mongod(t, req, func(s *mgo.Session) {
-		Handler(s, "gomon_test", "db")(h).ServeHTTP(w, req)
-		se := context.Get(req, "db")
-		assert.NotNil(t, se)
-		assert.TypeOf(t, "*mgo.Database", se)
-		assert.Equal(t, "Hello World!", w.Body.String())
-	})
+	w := httptest.NewRecorder()
+	req := &http.Request{}
+	Handler(s, "gomon_test", "db")(h).ServeHTTP(w, req)
+
+	c := context.Get(req, "db")
+	assert.NotNil(t, c)
+	assert.TypeOf(t, "*mgo.Database", c)
+	assert.Equal(t, "Hello World!", w.Body.String())
 }
