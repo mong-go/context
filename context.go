@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/context"
 	"gopkg.in/mgo.v2"
+	mgourl "gopkg.in/mong-go/url.v1"
 )
 
 type constructor func(http.Handler) http.Handler
@@ -28,6 +29,26 @@ func Handler(s *mgo.Session, name string, key ...interface{}) constructor {
 			h.ServeHTTP(w, req)
 		})
 	}
+}
+
+// Parse parses a mongo url string, dials and returns the handler
+func Parse(urlStr string, key ...interface{}) (constructor, error) {
+	u, err := mgourl.Parse(urlStr)
+	if err != nil {
+		return nil, err
+	}
+
+	s, err := mgo.Dial(u.ShortString())
+	if err != nil {
+		return nil, err
+	}
+
+	k := getkey(key...)
+	if k == nil {
+		k = u.Database()
+	}
+
+	return Handler(s, u.Database(), k), nil
 }
 
 // getkey returns the first key in the argument of keys
