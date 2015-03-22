@@ -1,6 +1,6 @@
 # context
 
-[![Build Status](https://travis-ci.org/gomon/gomon.svg?branch=master)](https://travis-ci.org/gomon/gomon)
+[![Build Status](https://travis-ci.org/mong-go/context.svg?branch=master)](https://travis-ci.org/mong-go/context)
 [![GoDoc](https://godoc.org/gopkg.in/mong-go/context.v1?status.svg)](http://godoc.org/gopkg.in/mong-go/context.v1)
 
 Mgo session clone middleware using Gorilla/Context
