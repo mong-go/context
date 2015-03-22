@@ -7,7 +7,7 @@ Mgo session clone middleware using Gorilla/Context
 
 ## Install
 
-  go get gopkg.in/mong-go/context.v1
+    go get gopkg.in/mong-go/context.v1
 
 ## Usage
 
