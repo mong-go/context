@@ -1,9 +1,10 @@
 package context
 
 import (
+	"errors"
 	"net/http"
 
-	. "github.com/gorilla/context"
+	"github.com/gorilla/context"
 	"gopkg.in/mgo.v2"
 )
 
@@ -21,7 +22,8 @@ func Handler(s *mgo.Session, name string, key ...interface{}) constructor {
 		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			c := s.Clone()
 			defer c.Close()
-			Set(req, k, c.DB(name))
+
+			context.Set(req, k, c.DB(name))
 
 			h.ServeHTTP(w, req)
 		})
@@ -35,4 +37,16 @@ func getkey(key ...interface{}) interface{} {
 	}
 
 	return nil
+}
+
+var ErrInvalidContext = errors.New("context was not *mgo.Database")
+
+// Get returns the db from context or an invalid context error
+func Get(key interface{}, req *http.Request) (*mgo.Database, error) {
+	db, ok := context.Get(req, key).(*mgo.Database)
+	if !ok {
+		return nil, ErrInvalidContext
+	}
+
+	return db, nil
 }
