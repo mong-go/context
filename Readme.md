@@ -1,40 +1,41 @@
-# gomon
+# context
 
 [![Build Status](https://travis-ci.org/gomon/gomon.svg?branch=master)](https://travis-ci.org/gomon/gomon)
-[![GoDoc](https://godoc.org/github.com/gomon/gomon?status.svg)](http://godoc.org/github.com/gomon/gomon)
+[![GoDoc](https://godoc.org/gopkg.in/mong-go/context.v1?status.svg)](http://godoc.org/gopkg.in/mong-go/context.v1)
 
-mgo session clone middleware
+Mgo session clone middleware using Gorilla/Context
 
-## Example
+## Install
 
-Handler for alice to clone sessions and set to context using gorilla/context.
+  go get gopkg.in/mong-go/context.v1
 
-    session, _ := mgo.Dial("127.0.0.1:27017")
+## Usage
 
-    mgoh := gomon.Handler(session, "db_name")
-    chain := alice.New(mgoh, ...)
+*Usage below uses Alice as the middlware library*
 
-Create your own getter.
+    import mgocontext "gopkg.in/mong-go/context.v1"
 
-    func GetDB(req *http.Request) *mgo.Database {
-      return context.Get(req, "db_name").(*mgo.Database)
+    session, err := mgo.Dial("127.0.0.1:27017")
+    if err != nil {
+      log.Fatal(err)
     }
 
-*The `db_name` is the context key*
+    chain := alice.New(mgocontext.Handler(session, "db_name"), ...)
+    ...
 
-Define a context key.
+---
 
-    mgoh := gomon.Handler(session, "db_name", "my_key")
+Context key will default the database name argument.
 
-    func GetDB(req *http.Request) *mgo.Database {
-      return context.Get(req, "my_key").(*mgo.Database)
-    }
+    mgocontext.Handler(session, "db_name")
 
-Get the db within the middleware chain.
+    // db := context.Get(req, "db_name").(*mgo.Database)
 
-    func(w http.ResponseWriter, req *http.Request) {
-      db := GetDB(req)
-    }
+Or you can provide a 3rd argument for a custom key to be used.
+
+    mgocontext.Handler(session, "db_name", "myDatabase")
+
+    // db := context.Get(req, "myDatabase").(*mgo.Database)
 
 ## License 
 
