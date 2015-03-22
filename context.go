@@ -63,7 +63,7 @@ func getkey(key ...interface{}) interface{} {
 var ErrInvalidContext = errors.New("context was not *mgo.Database")
 
 // Get returns the db from context or an invalid context error
-func Get(key interface{}, req *http.Request) (*mgo.Database, error) {
+func Get(req *http.Request, key interface{}) (*mgo.Database, error) {
 	db, ok := context.Get(req, key).(*mgo.Database)
 	if !ok {
 		return nil, ErrInvalidContext
