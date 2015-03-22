@@ -22,11 +22,12 @@ func Handler(s *mgo.Session, name string, key ...interface{}) constructor {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			c := s.Clone()
-			defer c.Close()
-
 			context.Set(req, k, c.DB(name))
 
 			h.ServeHTTP(w, req)
+
+			context.Delete(req, k)
+			c.Close()
 		})
 	}
 }
