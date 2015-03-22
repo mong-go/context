@@ -37,6 +37,12 @@ Or you can provide a 3rd argument for a custom key to be used.
 
     // db := context.Get(req, "myDatabase").(*mgo.Database)
 
+---
+
+__NOTE__
+
+Be sure to use Gorilla/context's context clear handler to clean up the contexts to avoid leaks.
+
 ## License 
 
 MIT
