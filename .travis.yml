@@ -4,6 +4,7 @@ install:
   - go get gopkg.in/nowk/assert.v2
   - go get gopkg.in/mgo.v2
   - go get gopkg.in/mgo.v2/bson
+  - go get gopkg.in/mong-go/url.v1
 services:
   - mongodb
 go:
