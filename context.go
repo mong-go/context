@@ -9,10 +9,10 @@ import (
 	mgourl "gopkg.in/mong-go/url.v1"
 )
 
-type constructor func(http.Handler) http.Handler
-
 // Handler provides a middlware handler to clone mgo sessions and set to context
-func Handler(s *mgo.Session, name string, key ...interface{}) constructor {
+func Handler(s *mgo.Session, name string,
+	key ...interface{}) func(http.Handler) http.Handler {
+
 	// get key or use the name of the db
 	k := getkey(key...)
 	if k == nil {
@@ -33,7 +33,9 @@ func Handler(s *mgo.Session, name string, key ...interface{}) constructor {
 }
 
 // Parse parses a mongo url string, dials and returns the handler
-func Parse(urlStr string, key ...interface{}) (constructor, error) {
+func Parse(urlStr string, key ...interface{}) (func(http.Handler) http.Handler,
+	error) {
+
 	u, err := mgourl.Parse(urlStr)
 	if err != nil {
 		return nil, err
